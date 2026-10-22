@@ -6,6 +6,15 @@ import type { Decision, Tier } from '../types'
 const TIERS = ['simple', 'medium', 'complex'] as const
 const last = atom({ plugin: 'model-router', key: 'last' } as const, null)
 
+// `turn.step` takes a full model id, not an alias: aliases are resolved here.
+// A full id given in the config is used as is.
+const ALIASES: Record<string, string> = {
+  haiku: 'claude-haiku-5-5',
+  sonnet: 'claude-sonnet-5-5',
+  opus: 'claude-opus-5-5',
+  fable: 'claude-fable-5-1',
+}
+
 const SYSTEM = [
   'You route requests sent to a coding assistant to a model tier.',
   'Answer with exactly one lowercase word and nothing else: simple, medium, complex, or same.',
@@ -24,13 +33,19 @@ const EFFORT: Record<Tier, 'low' | 'medium' | undefined> = {
   complex: undefined,
 }
 
+type Choice = { tier: Tier; reason: Decision['reason'] }
+
 const isTier = (value: unknown): value is Tier =>
   typeof value === 'string' && (TIERS as readonly string[]).includes(value)
 
+const resolveModel = (model: string) => {
+  const trimmed = model.trim()
+
+  return ALIASES[trimmed.toLowerCase()] ?? trimmed
+}
+
 const short = (model: string) =>
   model.replace(/^claude-/, '').replace(/-\d{8}$/, '')
-
-type Choice = { tier: Tier; reason: Decision['reason'] }
 
 async function classify(
   $: EngineInterface,
@@ -98,18 +113,18 @@ async function probeAll(
   if (unusable.size > 0) {
     const list = [...unusable].map(([name, why]) => `${name} (${why})`).join(', ')
     $.ui.log(
-      `model-router: unusable on this machine, falling back to the session model: ${list}`,
+      `model-router: unusable on this machine, skipped in the chain: ${list}`,
     )
   }
 }
 
 export const register: Register = (on, options) => {
   const models: Record<Tier, string> = {
-    simple: String(options.simpleModel || 'haiku'),
-    medium: String(options.mediumModel || 'sonnet'),
-    complex: String(options.complexModel || ''),
+    simple: resolveModel(String(options.simpleModel || 'haiku')),
+    medium: resolveModel(String(options.mediumModel || 'sonnet')),
+    complex: resolveModel(String(options.complexModel || '')),
   }
-  const classifier = String(options.classifierModel || 'haiku')
+  const classifier = resolveModel(String(options.classifierModel || 'haiku'))
   const unusable = new Map<string, string>()
 
   let isOn = true
@@ -118,22 +133,33 @@ export const register: Register = (on, options) => {
   let pending: Choice | null = null
   const byTurn = new Map<string, Choice>()
 
-  const modelFor = (tier: Tier) => {
-    const model = models[tier]
+  const names = () =>
+    [...new Set([...Object.values(models), classifier].filter(Boolean))]
 
-    return model && !unusable.has(model) ? model : ''
+  // The models to try for a tier, strongest last: a model that fails hands the
+  // request to the next one, and the session's own model always closes the
+  // chain, so a turn never dies on a model this machine cannot use.
+  const chainFor = (tier: Tier, sessionModel: string): string[] => {
+    const wanted =
+      tier === 'simple'
+        ? [models.simple, models.medium]
+        : tier === 'medium'
+          ? [models.medium]
+          : [models.complex]
+    const chain = [...wanted.filter(m => m && !unusable.has(m)), sessionModel]
+
+    return [...new Set(chain)]
   }
 
   const describe = (tier: Tier) => {
-    const model = modelFor(tier)
+    const [first] = chainFor(tier, 'session model')
     const effort = EFFORT[tier] ? ` (effort ${EFFORT[tier]})` : ' (session effort)'
-    const note = models[tier] && !model ? `, ${models[tier]} unusable: ${unusable.get(models[tier])}` : ''
+    const wanted = models[tier]
+    const note =
+      wanted && unusable.has(wanted) ? `, ${wanted} unusable: ${unusable.get(wanted)}` : ''
 
-    return `${model || 'session model'}${effort}${note}`
+    return `${first === 'session model' ? first : short(first ?? '')}${effort}${note}`
   }
-
-  const names = () =>
-    [...new Set([...Object.values(models), classifier].filter(Boolean))]
 
   on('session.start', async ($, e, next) => {
     isOn = (await $.store.get('enabled')) !== false
@@ -182,11 +208,15 @@ export const register: Register = (on, options) => {
     }
 
     const decision = await read($, last)
+    const sessionModel = await $.session.model()
     const lines = [
-      `router: ${isOn ? 'on' : 'off'}, ${forced ? `forced ${forced}` : 'auto'}, session model ${await $.session.model()}`,
-      `simple  -> ${describe('simple')}`,
-      `medium  -> ${describe('medium')}`,
-      `complex -> ${describe('complex')}`,
+      `router: ${isOn ? 'on' : 'off'}, ${forced ? `forced ${forced}` : 'auto'}, session model ${sessionModel}`,
+      `simple  -> ${chainFor('simple', sessionModel).map(short).join(' > ')} (effort low)`,
+      `medium  -> ${chainFor('medium', sessionModel).map(short).join(' > ')} (effort medium)`,
+      `complex -> ${chainFor('complex', sessionModel).map(short).join(' > ')} (session effort)`,
+      unusable.size > 0
+        ? `unusable: ${[...unusable].map(([name, why]) => `${short(name)} (${why})`).join(', ')}`
+        : 'unusable: none',
       decision
         ? `last: ${decision.tier} -> ${short(decision.model)} (${decision.reason})`
         : 'last: no routed turn yet',
@@ -227,27 +257,44 @@ export const register: Register = (on, options) => {
     const choice = e.agentId === undefined ? byTurn.get(e.turnId) : undefined
     if (choice === undefined) return yield* next(e)
 
-    const model = modelFor(choice.tier) || e.model
-    const effort =
-      e.effort !== undefined && EFFORT[choice.tier] !== undefined
-        ? EFFORT[choice.tier]
-        : e.effort
+    const chain = chainFor(choice.tier, e.model)
+    const tierEffort = EFFORT[choice.tier]
 
-    if (e.index === 0) {
-      const decision: Decision = {
-        tier: choice.tier,
-        model,
-        effort: effort === undefined ? 'default' : String(effort),
-        reason: choice.reason,
-        at: await $.clock.now(),
+    for (let i = 0; i < chain.length; i++) {
+      const model = chain[i] ?? e.model
+      const isSessionModel = model === e.model
+      const effort =
+        e.effort !== undefined && tierEffort !== undefined && !isSessionModel
+          ? tierEffort
+          : e.effort
+
+      if (e.index === 0 && i === 0) {
+        const decision: Decision = {
+          tier: choice.tier,
+          model,
+          effort: effort === undefined ? 'default' : String(effort),
+          reason: choice.reason,
+          at: await $.clock.now(),
+        }
+        await update($, last, () => decision)
+        $.ui.status(
+          `router: ${choice.tier} -> ${short(model)}${effort !== undefined ? ` (${effort})` : ''}`,
+        )
       }
-      await update($, last, () => decision)
-      $.ui.status(
-        `router: ${choice.tier} -> ${short(model)}${effort !== undefined ? ` (${effort})` : ''}`,
-      )
-    }
 
-    return yield* next({ ...e, model, effort })
+      const result = yield* next({ ...e, model, effort })
+      const noResponse = result.stopReason === null && result.usage === null
+      const isLast = i === chain.length - 1
+      if (!noResponse || isLast || next.signal.aborted) return result
+
+      // No response from this model and the turn was not interrupted: mark it,
+      // tell the person, and open a fresh request on the next model.
+      const fallback = chain[i + 1] ?? e.model
+      unusable.set(model, 'no response at turn.step')
+      $.ui.log(`model-router: ${model} gave no response, retrying with ${fallback}`)
+      $.ui.status(`router: ${short(model)} failed -> ${short(fallback)}`)
+      $.ui.toast(`router: ${short(model)} failed, retrying with ${short(fallback)}`)
+    }
   })
 
   on('turn.complete', ($, e, next) => {

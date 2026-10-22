@@ -1,30 +1,37 @@
 # model-router
 
-Routes each prompt to a model tier so simple requests do not spend the tokens of a large model.
+Envía cada turno al modelo adecuado según la dificultad de la tarea, para que las peticiones simples no gasten los tokens de un modelo grande.
 
-Before every user prompt, a small classifier model (Haiku by default) labels the prompt as `simple`, `medium` or `complex`, or `same` to keep the previous tier for a short follow-up. The turn's requests are then sent to the configured model for that tier: Haiku with low effort for simple prompts, Sonnet with medium effort for medium prompts, and the session's own model for complex prompts. Subagents are never rerouted.
+Antes de cada prompt, un modelo pequeño de clasificación (Haiku por defecto) lo etiqueta como `simple`, `medium` o `complex`, o como `same` para mantener el nivel anterior en una continuación corta. Las peticiones del turno se envían después al modelo configurado para ese nivel: Haiku con esfuerzo bajo para prompts simples, Sonnet con esfuerzo medio para prompts medios, y el modelo de la sesión para prompts complejos. Los subagentes nunca se reenrutan.
 
-## Install
+## Instalación
 
-At the prompt of a terminal session:
+En el prompt de una sesión de terminal:
 
 ```text
-/plugin install model-router --marketplace OWNER/claude-mods
+/plugin install model-router --marketplace Jmezas/claude-mods
 ```
 
-From a shell: `claude plugin install model-router --marketplace OWNER/claude-mods`. Answer `y` to `Add marketplace?`, then pick the user scope.
+Desde una shell: `claude plugin install model-router --marketplace Jmezas/claude-mods`. Responde `y` a `Add marketplace?` y elige el ámbito de usuario.
 
-## Commands
+## Comandos
 
-- `/router` shows the current state, the tier mapping and the last decision.
-- `/router on` and `/router off` enable or disable routing.
-- `/router simple|medium|complex` forces every prompt to one tier.
-- `/router auto` returns to the classifier.
+- `/router` muestra el estado, el mapa de niveles, los modelos inutilizables y la última decisión.
+- `/router on` y `/router off` activan o desactivan el enrutado.
+- `/router simple|medium|complex` fuerza todos los prompts a un nivel.
+- `/router auto` vuelve al clasificador.
+- `/router probe` vuelve a sondear los modelos configurados.
 
-## Configuration
+## Configuración
 
-`simpleModel`, `mediumModel`, `complexModel` (empty keeps the session model) and `classifierModel` are set in `/config` or under `pluginConfigs.model-router.options` in settings.
+`simpleModel`, `mediumModel`, `complexModel` (vacío mantiene el modelo de la sesión) y `classifierModel` se definen en `/config` o en `pluginConfigs.model-router.options` de la configuración. Los alias `haiku`, `sonnet`, `opus` y `fable` se resuelven a ids completos; un id completo se usa tal cual.
 
-## Caveats
+## Cadena de respaldo
 
-Switching models between turns invalidates the prompt cache of the previous model, so a long conversation that alternates tiers pays some cache rewrites. The classifier adds one small request before each prompt.
+Cada nivel es una cadena que termina en el modelo de la sesión. Simple prueba Haiku, luego Sonnet y después el modelo de la sesión; medium prueba Sonnet y después el modelo de la sesión.
+
+Al iniciar la sesión, cada modelo configurado recibe una petición de un token. Un modelo que no responde se omite. Si un modelo no da respuesta durante un turno, el router lo marca como inutilizable, muestra un aviso y reenvía la misma petición al siguiente modelo de la cadena. El turno continúa sin que nadie ejecute `/model`.
+
+## Advertencias
+
+Cambiar de modelo entre turnos invalida la caché de prompts del modelo anterior, así que una conversación larga que alterna niveles paga algunas reescrituras de caché. El clasificador añade una petición pequeña antes de cada prompt.

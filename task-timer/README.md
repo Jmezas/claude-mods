@@ -1,25 +1,25 @@
 # task-timer
 
-A stopwatch for Claude Code turns and named tasks.
+Cronómetro para turnos y tareas con nombre en Claude Code.
 
-While a turn runs, the band above the prompt and the status line show the elapsed time and the number of tool calls. When the turn ends, the band shows its duration, tool count and the model that answered. The `/timer` pane lists every turn of the session with duration, tools, model and the prompt it answered, plus session totals.
+Mientras un turno se ejecuta, la banda encima del prompt y la línea de estado muestran el tiempo transcurrido y el número de herramientas usadas. Al terminar el turno, la banda muestra su duración, el número de herramientas y el modelo que respondió. El panel `/timer` lista cada turno de la sesión con duración, herramientas, modelo y el prompt al que respondió, además de los totales de la sesión.
 
-Named tasks span several turns: `/timer start <name>` opens a task, each turn adds its active time, and `/timer stop` closes it and reports wall time, active time and turns. Finished tasks persist across sessions.
+Las tareas con nombre abarcan varios turnos: `/timer start <nombre>` abre una tarea, cada turno suma su tiempo activo, y `/timer stop` la cierra e informa del tiempo de reloj, el tiempo activo y el número de turnos. Las tareas terminadas persisten entre sesiones.
 
-## Install
+## Instalación
 
-At the prompt of a terminal session:
+En el prompt de una sesión de terminal:
 
 ```text
-/plugin install task-timer --marketplace OWNER/claude-mods
+/plugin install task-timer --marketplace Jmezas/claude-mods
 ```
 
-From a shell: `claude plugin install task-timer --marketplace OWNER/claude-mods`. Answer `y` to `Add marketplace?`, then pick the user scope.
+Desde una shell: `claude plugin install task-timer --marketplace Jmezas/claude-mods`. Responde `y` a `Add marketplace?` y elige el ámbito de usuario.
 
-## Commands
+## Comandos
 
-- `/timer` opens the pane.
-- `/timer start <name>` starts a named task.
-- `/timer stop` ends the running task.
-- `/timer hide` and `/timer show` toggle the band above the prompt.
-- `/timer reset` clears the session history and the stored tasks.
+- `/timer` abre el panel.
+- `/timer start <nombre>` inicia una tarea con nombre.
+- `/timer stop` termina la tarea en curso.
+- `/timer hide` y `/timer show` alternan la banda encima del prompt.
+- `/timer reset` borra el historial de la sesión y las tareas guardadas.

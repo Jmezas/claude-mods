@@ -5,14 +5,14 @@
 # skipped.
 #
 # Usage, from a shell on a machine with Claude Code and a GitHub credential:
-#   gh repo clone OWNER/claude-mods && ./claude-mods/install.sh
+#   gh repo clone Jmezas/claude-mods && ./claude-mods/install.sh
 # or, without cloning:
-#   bash <(gh api repos/OWNER/claude-mods/contents/install.sh -H 'Accept: application/vnd.github.raw')
+#   bash <(gh api repos/Jmezas/claude-mods/contents/install.sh -H 'Accept: application/vnd.github.raw')
 #
-# CLAUDE_MODS_REPO overrides the marketplace source (default OWNER/claude-mods).
+# CLAUDE_MODS_REPO overrides the marketplace source (default Jmezas/claude-mods).
 set -euo pipefail
 
-REPO="${CLAUDE_MODS_REPO:-OWNER/claude-mods}"
+REPO="${CLAUDE_MODS_REPO:-Jmezas/claude-mods}"
 
 if ! command -v claude >/dev/null 2>&1; then
   echo "claude is not on PATH. Install Claude Code first: https://claude.com/claude-code" >&2
@@ -51,6 +51,7 @@ add_marketplace caveman JuliusBrussee/caveman
 install_plugin model-router@claude-mods
 install_plugin task-timer@claude-mods
 install_plugin thermos@claude-mods
+install_plugin reverse-engineer-anything@claude-mods
 
 # Third-party plugins of this setup.
 install_plugin antislop@anti-slop

@@ -1,39 +1,39 @@
-# Thermos plugin
+# Plugin Thermos
 
-Thermo-nuclear branch review for Cursor agents: deep correctness and security audits, harsh maintainability rubrics, and parallel subagent orchestration.
+Revisión de ramas con pensamiento termonuclear: auditorías profundas de corrección y seguridad, rúbricas exigentes de calidad de código y orquestación con subagentes en paralelo.
 
-This folder is a mirror of [cursor/plugins/thermos](https://github.com/cursor/plugins/tree/main/thermos) (MIT, see LICENSE) packaged for Claude Code, with a `.claude-plugin/plugin.json` manifest and `disable-model-invocation` removed from the three skills so Claude can fire them on its own.
+Esta carpeta es un espejo de [cursor/plugins/thermos](https://github.com/cursor/plugins/tree/main/thermos) (MIT, ver LICENSE) adaptado a Claude Code, con un manifiesto `.claude-plugin/plugin.json` y `disable-model-invocation` quitado de las tres skills para que Claude pueda activarlas por sí mismo.
 
-## Installation in Claude Code
+## Instalación en Claude Code
 
-At the prompt of a terminal session:
+En el prompt de una sesión de terminal:
 
 ```text
 /plugin install thermos --marketplace OWNER/claude-mods
 ```
 
-From a shell: `claude plugin install thermos --marketplace OWNER/claude-mods`.
+Desde una shell: `claude plugin install thermos --marketplace OWNER/claude-mods`.
 
-## Installation in Cursor (upstream)
+## Instalación en Cursor (upstream)
 
 ```bash
 /add-plugin thermos
 ```
 
-## Architecture
+## Arquitectura
 
 ```mermaid
 flowchart TB
-  subgraph L2["Orchestrator"]
+  subgraph L2["Orquestador"]
     TH[thermos]
   end
 
-  subgraph L1["Subagents"]
+  subgraph L1["Subagentes"]
     SNR[thermo-nuclear-review-subagent]
     SNCQ[thermo-nuclear-code-quality-review-subagent]
   end
 
-  DIFF[git diff + file contents]
+  DIFF[git diff + contenido de archivos]
 
   subgraph L0["Skills"]
     TNR[thermo-nuclear-review]
@@ -50,33 +50,33 @@ flowchart TB
 
 ## Skills
 
-| Skill | Description |
+| Skill | Descripción |
 |:------|:------------|
-| `thermo-nuclear-review` | Deep branch audit (bugs, breakages, security, devex, feature-gate leaks). |
-| `thermo-nuclear-code-quality-review` | Strict maintainability audit (code-judo, 1k-line rule, spaghetti, boundaries). |
-| `thermos` | Run both review subagents in parallel and synthesize findings. |
+| `thermo-nuclear-review` | Auditoría profunda de la rama (errores, roturas, seguridad, experiencia de desarrollo, fugas de feature flags). |
+| `thermo-nuclear-code-quality-review` | Auditoría estricta de mantenibilidad (code-judo, regla de 1k líneas, código espagueti, fronteras). |
+| `thermos` | Lanza ambos subagentes de revisión en paralelo y sintetiza los hallazgos. |
 
-## Agents
+## Agentes
 
-| Agent | Description |
+| Agente | Descripción |
 |:------|:------------|
-| `thermo-nuclear-review-subagent` | Task subagent for deep review rubric (diff-scoped). |
-| `thermo-nuclear-code-quality-review-subagent` | Task subagent for code-quality rubric (diff-scoped). |
+| `thermo-nuclear-review-subagent` | Subagente de tarea para la rúbrica de revisión profunda (limitada al diff). |
+| `thermo-nuclear-code-quality-review-subagent` | Subagente de tarea para la rúbrica de calidad de código (limitada al diff). |
 
-## Typical usage
+## Uso típico
 
-**Double review (thermos):**
+**Doble revisión (thermos):**
 
-1. Gather `git diff main...HEAD` and full contents of changed files.
-2. Invoke both subagents in one message with `run_in_background: true`.
-3. Synthesize prioritized, deduped findings.
+1. Obtén `git diff main...HEAD` y el contenido completo de los archivos cambiados.
+2. Invoca ambos subagentes en un solo mensaje con `run_in_background: true`.
+3. Sintetiza los hallazgos priorizados y sin duplicados.
 
-**Single skill:** invoke `thermo-nuclear-review` or `thermo-nuclear-code-quality-review` in the main agent, or the matching subagent after gathering diff context.
+**Skill individual:** invoca `thermo-nuclear-review` o `thermo-nuclear-code-quality-review` en el agente principal, o el subagente correspondiente tras reunir el contexto del diff.
 
-## Migration from cursor-team-kit
+## Migración desde cursor-team-kit
 
-`cursor-team-kit` previously included only `thermo-nuclear-code-quality-review`. That skill and agent now live in **Thermos** alongside deep review and `thermos`. Remove the old thermo entries from team-kit when you install this plugin to avoid duplicates.
+`cursor-team-kit` incluía antes solo `thermo-nuclear-code-quality-review`. Esa skill y su agente viven ahora en **Thermos**, junto a la revisión profunda y `thermos`. Elimina las entradas thermo antiguas de team-kit al instalar este plugin para evitar duplicados.
 
-## License
+## Licencia
 
 MIT

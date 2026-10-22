@@ -1,0 +1,5 @@
+{
+  "name": "reverse-engineer-anything",
+  "version": "0.1.0",
+  "description": "The reverse-engineer-anything skill packaged as a plugin: drives the REA MCP server over native, managed, Electron, firmware and browser targets. Needs the rea MCP server configured separately."
+}

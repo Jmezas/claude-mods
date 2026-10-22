@@ -20,6 +20,12 @@
       "source": "./thermos",
       "version": "1.0.0",
       "description": "Mirror of Cursor's Thermos plugin for Claude Code: thermo-nuclear branch review skills and subagents, with model invocation enabled."
+    },
+    {
+      "name": "reverse-engineer-anything",
+      "source": "./reverse-engineer-anything",
+      "version": "0.1.0",
+      "description": "The reverse-engineer-anything skill as a plugin; drives the REA MCP server, which is configured separately."
     }
   ]
 }
