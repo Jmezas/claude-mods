@@ -1,0 +1,6 @@
+{
+  "name": "guard-rails",
+  "version": "0.1.0",
+  "description": "Bloquea acciones que Claude no debe hacer por su cuenta: commit, push y otras escrituras de git que el usuario no pidió, borrados fuera del repositorio, edición de .env y secretos, kubectl y helm en producción, DROP y TRUNCATE.",
+  "license": "MIT"
+}

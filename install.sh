@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# Installs the whole Claude Code plugin set of this repository at the user
-# scope: the three plugins hosted here plus the third-party ones this setup
-# relies on. Safe to run again: marketplaces and plugins already present are
-# skipped.
+# Instala todo el conjunto de plugins de Claude Code de este repositorio a
+# nivel de usuario: los plugins alojados aquí más los de terceros que usa este
+# entorno. Se puede ejecutar varias veces: lo ya instalado se omite.
 #
-# Usage, from a shell on a machine with Claude Code and a GitHub credential:
+# Uso, desde una shell con Claude Code y una credencial de GitHub:
 #   gh repo clone Jmezas/claude-mods && ./claude-mods/install.sh
-# or, without cloning:
+# o, sin clonar:
 #   bash <(gh api repos/Jmezas/claude-mods/contents/install.sh -H 'Accept: application/vnd.github.raw')
 #
-# CLAUDE_MODS_REPO overrides the marketplace source (default Jmezas/claude-mods).
+# CLAUDE_MODS_REPO cambia el origen del marketplace (por defecto Jmezas/claude-mods).
 set -euo pipefail
 
 REPO="${CLAUDE_MODS_REPO:-Jmezas/claude-mods}"
@@ -52,6 +51,10 @@ install_plugin model-router@claude-mods
 install_plugin task-timer@claude-mods
 install_plugin thermos@claude-mods
 install_plugin reverse-engineer-anything@claude-mods
+install_plugin guard-rails@claude-mods
+install_plugin cost-budget@claude-mods
+install_plugin release-notes@claude-mods
+install_plugin api-contract@claude-mods
 
 # Third-party plugins of this setup.
 install_plugin antislop@anti-slop
@@ -61,5 +64,5 @@ install_plugin frontend-design@claude-plugins-official
 install_plugin postman@claude-plugins-official
 
 echo
-echo "Done. Start a new Claude Code session, or run /reload-plugins in an open one."
-echo "Then: /router shows the model router, /timer opens the stopwatch pane."
+echo "Listo. Abre una sesión nueva de Claude Code o ejecuta /reload-plugins en una abierta."
+echo "Comandos: /router, /timer, /guard, /budget, /release, /api-contract, /thermos."

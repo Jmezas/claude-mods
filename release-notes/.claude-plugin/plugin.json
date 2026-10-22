@@ -1,0 +1,6 @@
+{
+  "name": "release-notes",
+  "version": "0.1.0",
+  "description": "/release genera la sección de CHANGELOG en español a partir de los commits desde la última etiqueta o desde la referencia indicada. Nunca hace commit, tag ni push.",
+  "license": "MIT"
+}

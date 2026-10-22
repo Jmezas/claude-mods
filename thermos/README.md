@@ -9,10 +9,10 @@ Esta carpeta es un espejo de [cursor/plugins/thermos](https://github.com/cursor/
 En el prompt de una sesión de terminal:
 
 ```text
-/plugin install thermos --marketplace OWNER/claude-mods
+/plugin install thermos --marketplace Jmezas/claude-mods
 ```
 
-Desde una shell: `claude plugin install thermos --marketplace OWNER/claude-mods`.
+Desde una shell: `claude plugin install thermos --marketplace Jmezas/claude-mods`.
 
 ## Instalación en Cursor (upstream)
 

@@ -1,0 +1,6 @@
+{
+  "name": "api-contract",
+  "version": "0.1.0",
+  "description": "/api-contract: a partir de los controladores NestJS cambiados en la rama, actualiza la colección Postman del repositorio y genera pruebas e2e con supertest. No hace commit.",
+  "license": "MIT"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "cost-budget",
+  "version": "0.1.0",
+  "description": "Coste en USD y tokens por turno, sesión, día y proyecto, con presupuesto diario y aviso al superarlo. /budget muestra el resumen.",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "dailyBudgetUsd": {
+      "type": "string",
+      "title": "Presupuesto diario (USD)",
+      "description": "Aviso al superar este gasto en un día, sumando todas las sesiones. Vacío desactiva el aviso.",
+      "default": "10"
+    }
+  }
+}

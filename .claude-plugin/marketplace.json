@@ -1,7 +1,9 @@
 {
   "name": "claude-mods",
-  "owner": { "name": "OWNER" },
-  "description": "Personal Claude Code plugin set: a model router that picks a model and effort per prompt, a task stopwatch, and a mirror of Cursor's Thermos review plugin. install.sh installs the whole set.",
+  "owner": {
+    "name": "Jmezas"
+  },
+  "description": "Conjunto personal de plugins para Claude Code: enrutador de modelo y esfuerzo por prompt, cronómetro de tareas, barreras para git y acciones destructivas, coste por día y proyecto, notas de versión, contrato de API NestJS, y espejo del plugin Thermos de Cursor. install.sh instala todo el conjunto.",
   "plugins": [
     {
       "name": "model-router",
@@ -26,6 +28,30 @@
       "source": "./reverse-engineer-anything",
       "version": "0.1.0",
       "description": "The reverse-engineer-anything skill as a plugin; drives the REA MCP server, which is configured separately."
+    },
+    {
+      "name": "guard-rails",
+      "source": "./guard-rails",
+      "version": "0.1.0",
+      "description": "Bloquea commit, push y otras escrituras de git que el usuario no pidió, borrados fuera del repo, edición de .env, kubectl/helm en producción y DROP/TRUNCATE."
+    },
+    {
+      "name": "cost-budget",
+      "source": "./cost-budget",
+      "version": "0.1.0",
+      "description": "Coste en USD y tokens por turno, sesión, día y proyecto, con presupuesto diario y aviso al superarlo."
+    },
+    {
+      "name": "release-notes",
+      "source": "./release-notes",
+      "version": "0.1.0",
+      "description": "/release genera la sección de CHANGELOG en español desde los commits. Nunca hace commit, tag ni push."
+    },
+    {
+      "name": "api-contract",
+      "source": "./api-contract",
+      "version": "0.1.0",
+      "description": "/api-contract actualiza la colección Postman y genera pruebas e2e a partir de los controladores NestJS cambiados."
     }
   ]
 }
