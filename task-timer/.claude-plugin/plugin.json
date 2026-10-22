@@ -1,0 +1,7 @@
+{
+  "name": "task-timer",
+  "version": "0.1.0",
+  "description": "Stopwatch for turns and named tasks: live elapsed time above the prompt, a /timer pane with per-turn duration, tool count, model and tokens.",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

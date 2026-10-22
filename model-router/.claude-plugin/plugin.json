@@ -1,0 +1,33 @@
+{
+  "name": "model-router",
+  "version": "0.1.0",
+  "description": "Classifies each prompt as simple, medium or complex and routes the turn to a cheaper or stronger model accordingly.",
+  "license": "MIT",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "simpleModel": {
+      "type": "string",
+      "title": "Simple model",
+      "description": "Model for simple prompts (greetings, trivial edits, short questions).",
+      "default": "haiku"
+    },
+    "mediumModel": {
+      "type": "string",
+      "title": "Medium model",
+      "description": "Model for medium prompts (one-file changes, small functions, clear debugging).",
+      "default": "sonnet"
+    },
+    "complexModel": {
+      "type": "string",
+      "title": "Complex model",
+      "description": "Model for complex prompts. Empty keeps the session's own model.",
+      "default": ""
+    },
+    "classifierModel": {
+      "type": "string",
+      "title": "Classifier model",
+      "description": "Small model that classifies each prompt.",
+      "default": "haiku"
+    }
+  }
+}

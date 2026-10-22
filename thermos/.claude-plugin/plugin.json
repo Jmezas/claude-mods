@@ -1,0 +1,18 @@
+{
+  "name": "thermos",
+  "version": "1.0.0",
+  "description": "Thermo-nuclear branch review: deep correctness and security audits plus harsh code-quality rubrics, parallel subagents, thermos orchestration.",
+  "author": {
+    "name": "Cursor",
+    "email": "plugins@cursor.com"
+  },
+  "homepage": "https://cursor.com/marketplace/cursor/thermos",
+  "repository": "https://github.com/cursor/plugins",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "security-review",
+    "code-quality",
+    "subagents"
+  ]
+}

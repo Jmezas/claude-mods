@@ -1,0 +1,25 @@
+{
+  "name": "claude-mods",
+  "owner": { "name": "OWNER" },
+  "description": "Personal Claude Code plugin set: a model router that picks a model and effort per prompt, a task stopwatch, and a mirror of Cursor's Thermos review plugin. install.sh installs the whole set.",
+  "plugins": [
+    {
+      "name": "model-router",
+      "source": "./model-router",
+      "version": "0.1.0",
+      "description": "Classifies each prompt as simple, medium or complex and routes the turn to a cheaper or stronger model and effort."
+    },
+    {
+      "name": "task-timer",
+      "source": "./task-timer",
+      "version": "0.1.0",
+      "description": "Stopwatch for turns and named tasks: live elapsed time above the prompt and a /timer pane with per-turn duration, tools, model and tokens."
+    },
+    {
+      "name": "thermos",
+      "source": "./thermos",
+      "version": "1.0.0",
+      "description": "Mirror of Cursor's Thermos plugin for Claude Code: thermo-nuclear branch review skills and subagents, with model invocation enabled."
+    }
+  ]
+}
