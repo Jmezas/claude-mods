@@ -2,7 +2,7 @@
 
 Envía cada turno al modelo adecuado según la dificultad de la tarea, para que las peticiones simples no gasten los tokens de un modelo grande.
 
-Antes de cada prompt, un modelo pequeño de clasificación (Haiku por defecto) lo etiqueta como `simple`, `medium` o `complex`, o como `same` para mantener el nivel anterior en una continuación corta. Las peticiones del turno se envían después al modelo configurado para ese nivel: Haiku con esfuerzo bajo para prompts simples, Sonnet con esfuerzo medio para prompts medios, y el modelo de la sesión para prompts complejos. Los subagentes nunca se reenrutan.
+Antes de cada prompt, un modelo pequeño de clasificación (Haiku por defecto) lo etiqueta como `simple`, `medium` o `complex`, o como `same` para mantener el nivel anterior en una continuación corta. Las peticiones del turno se envían después al modelo configurado para ese nivel: Haiku para prompts simples (saludos, confirmaciones, recordar lo ya dicho en el chat), Sonnet con esfuerzo medio para tareas sencillas, y el modelo de la sesión para código complejo, análisis y razonamiento. Solo lo simple va al modelo barato; código, análisis y razonamiento nunca. Si un turno simple llega a un paso con herramientas, los pasos siguientes suben al nivel medio. Los subagentes nunca se reenrutan.
 
 ## Instalación
 
@@ -20,6 +20,7 @@ Desde una shell: `claude plugin install model-router --marketplace Jmezas/claude
 - `/router on` y `/router off` activan o desactivan el enrutado.
 - `/router simple|medium|complex` fuerza todos los prompts a un nivel.
 - `/router auto` vuelve al clasificador.
+- `/router log` muestra las últimas 20 decisiones con el prompt recortado.
 - `/router probe` vuelve a sondear los modelos configurados.
 
 ## Configuración
@@ -28,7 +29,7 @@ Desde una shell: `claude plugin install model-router --marketplace Jmezas/claude
 
 ## Cadena de respaldo
 
-Cada nivel es una cadena que termina en el modelo de la sesión. Simple prueba Haiku, luego Sonnet y después el modelo de la sesión; medium prueba Sonnet y después el modelo de la sesión.
+Cada nivel es una cadena que termina en el modelo de la sesión. Simple prueba el modelo simple, luego el medio y después el modelo de la sesión; medium prueba Sonnet y después el modelo de la sesión.
 
 Al iniciar la sesión, cada modelo configurado recibe una petición de un token. Un modelo que no responde se omite. Si un modelo no da respuesta durante un turno, el router lo marca como inutilizable, muestra un aviso y reenvía la misma petición al siguiente modelo de la cadena. El turno continúa sin que nadie ejecute `/model`.
 

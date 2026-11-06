@@ -33,7 +33,7 @@
       "name": "guard-rails",
       "source": "./guard-rails",
       "version": "0.1.0",
-      "description": "Bloquea commit, push y otras escrituras de git que el usuario no pidió, borrados fuera del repo, edición de .env, kubectl/helm en producción y DROP/TRUNCATE."
+      "description": "Bloquea commit, push y otras escrituras de git que el usuario no pidió, borrados fuera del repo, edición de .env, kubectl/helm en producción y DROP/TRUNCATE. Fija alcance estricto en el prompt del sistema: nada de código no pedido."
     },
     {
       "name": "cost-budget",

@@ -19,6 +19,10 @@ La comprobación se hace sobre el texto del mensaje del usuario que inició el t
 
 `git add` y `git status` nunca se bloquean. Los subagentes pasan por las mismas reglas.
 
+## Alcance estricto
+
+Con guard-rails activo, cada prompt del sistema lleva una sección `guard-rails:scope` que obliga al modelo a hacer solo lo que el mensaje pide: sin código, archivos, funciones, tests, comentarios, refactorizaciones, manejo de errores ni dependencias que nadie pidió, y sin tocar código que funciona fuera de la petición. Si detecta algo que convendría cambiar, lo dice en una línea y no lo toca. Entre una versión mínima y una amplia, entrega la mínima. `/guard off` quita la sección junto con las reglas.
+
 ## Instalación
 
 En el prompt de una sesión de terminal:

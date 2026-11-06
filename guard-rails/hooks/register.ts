@@ -75,6 +75,20 @@ type Denial = { deny: string }
 
 const FAILED: Denial = { deny: 'guard-rails: la comprobación falló, acción detenida por seguridad.' }
 
+// Section added to every system prompt: the model does only what the message
+// asks, nothing beyond it.
+const SCOPE = {
+  id: 'guard-rails:scope',
+  scope: 'session',
+  text: [
+    'Alcance estricto. Haz solo lo que el mensaje del usuario pide, dentro del contexto que da.',
+    'No añadas código, archivos, funciones, parámetros, opciones, tests, comentarios, documentación, refactorizaciones, manejo de errores, logs, validaciones ni dependencias que no se hayan pedido.',
+    'No modifiques código que funciona y queda fuera de la petición, ni siquiera para mejorarlo o unificar estilo.',
+    'Si ves algo fuera de ese alcance que convendría cambiar, dilo en una línea al final y no lo toques.',
+    'Si la petición admite una versión mínima y una amplia, entrega la mínima que cumple lo pedido.',
+  ].join(' '),
+} as const
+
 function block($: EngineInterface, log: string[], rule: string, why: string, what: string): Denial {
   log.push(`${rule}: ${what}`)
   if (log.length > 30) log.shift()
@@ -118,7 +132,7 @@ export const register: Register = on => {
     isOn = (await $.store.get('enabled')) !== false
     await $.command.register({
       name: 'guard',
-      description: 'guard-rails: status | on | off | allow (permite la próxima acción bloqueada) | log',
+      description: 'guard-rails: status | on | off | allow (permite la próxima acción bloqueada) | log. Bloquea acciones no pedidas y fija alcance estricto.',
       argumentHint: '[status|on|off|allow|log]',
     })
 
@@ -151,9 +165,17 @@ export const register: Register = on => {
         `guard-rails: ${isOn ? 'activo' : 'inactivo'}${allowOnce ? ', con un permiso pendiente' : ''}`,
         'reglas: git-force (dura), git-history, git-write, rm-outside (dura), disk (dura), k8s-prod, sql-drop, secret-file',
         'una regla pasa cuando el mensaje actual del usuario pide esa acción; las duras solo con /guard allow',
+        'alcance estricto: el prompt del sistema lleva la sección guard-rails:scope, que prohíbe añadir código no pedido',
         `bloqueos en esta sesión: ${log.length}`,
       ].join('\n'),
     }
+  })
+
+  on('prompt.compose', async ($, e, next) => {
+    const { sections } = await next(e)
+    if (!isOn) return { sections }
+
+    return { sections: [...sections, SCOPE] }
   })
 
   on('prompt.submit', ($, e, next) => {

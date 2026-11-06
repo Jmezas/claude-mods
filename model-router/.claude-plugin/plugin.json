@@ -8,7 +8,7 @@
     "simpleModel": {
       "type": "string",
       "title": "Simple model",
-      "description": "Model for simple prompts (greetings, trivial edits, short questions).",
+      "description": "Model for simple prompts only (greetings, acknowledgements, recalling earlier text).",
       "default": "haiku"
     },
     "mediumModel": {

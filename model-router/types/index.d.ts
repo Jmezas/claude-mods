@@ -10,6 +10,6 @@ export type Decision = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'model-router': { last: Decision | null }
+    'model-router': { last: Decision | null; log: (Decision & { prompt: string })[] }
   }
 }
